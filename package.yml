@@ -1,0 +1,13 @@
+depends:
+    - bootloader-proposal
+    - kprintf
+
+target.arm:
+    - src/main.c
+    - src/vector_table.c
+    - src/can_interface.c
+
+dependency-dir: ./
+
+templates:
+    include.jinja: include.mk
