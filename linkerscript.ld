@@ -5,18 +5,18 @@
 
 MEMORY
 {
-    FLASH_TEXT   (RX) : ORIGIN = 0x08000000, LENGTH = 4K
-    FLASH_CONFIG (RX) : ORIGIN = 0x08000800, LENGTH = 2K
-    RAM      (RWXAIL) : ORIGIN = 0x20000000, LENGTH = 40K
+    FLASH_TEXT    (RX) : ORIGIN = 0x08000000, LENGTH = 8K
+    FLASH_CONFIG1 (RX) : ORIGIN = 0x08002000, LENGTH = 2K
+    FLASH_CONFIG2 (RX) : ORIGIN = 0x08002800, LENGTH = 2K
+    FLASH_APP     (RX) : ORIGIN = 0x08003000, LENGTH = 244K
+    RAM       (RWXAIL) : ORIGIN = 0x20000000, LENGTH = 40K
 }
 
-REGION_ALIAS("REGION_TEXT",     FLASH_TEXT);
-REGION_ALIAS("REGION_RODATA",   FLASH_TEXT);
-REGION_ALIAS("REGION_CONFIG",   FLASH_CONFIG);
-REGION_ALIAS("REGION_BOOTARGS", RAM);
-REGION_ALIAS("REGION_DATA",     RAM);
-REGION_ALIAS("REGION_BSS",      RAM);
-REGION_ALIAS("REGION_NOINIT",   RAM);
+REGION_ALIAS("REGION_TEXT",   FLASH_TEXT);
+REGION_ALIAS("REGION_RODATA", FLASH_TEXT);
+REGION_ALIAS("REGION_DATA",   RAM);
+REGION_ALIAS("REGION_BSS",    RAM);
+REGION_ALIAS("REGION_NOINIT", RAM);
 
 EXTERN(vector_table)
 
@@ -93,10 +93,11 @@ SECTIONS
     } > REGION_RODATA
 
     /* config flash page */
-    .config :
-    {
-        *(.config .config.*)
-    } > REGION_CONFIG
+    config_page1 = ORIGIN(FLASH_CONFIG1);
+    config_page2 = ORIGIN(FLASH_CONFIG2);
+
+    /* application in flash */
+    app_start = ORIGIN(FLASH_APP);
 
     /*
      * .ARM.exidx exception unwinding; mandated by ARM's C++ ABI
@@ -107,12 +108,6 @@ SECTIONS
         *(.ARM.exidx* .gnu.linkonce.armexidx.*)
       } > REGION_RODATA
     __exidx_end = .;
-
-    .bootargs :
-    {
-        . = ALIGN(4);
-        *(.bootargs .bootargs.*)
-    } > REGION_BOOTARGS
 
     .data :
     {

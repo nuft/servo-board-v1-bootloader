@@ -1,13 +1,16 @@
 depends:
-    - bootloader-proposal
+    - can-bootloader
     - kprintf
+    - crc
 
 target.arm:
     - src/main.c
     - src/vector_table.c
     - src/can_interface.c
+    - src/debug.c
+    - src/reduce_binary.c
 
-dependency-dir: ./
+dependency-dir: ./dependencies
 
 templates:
     include.jinja: include.mk
